@@ -19,7 +19,7 @@ public class pageRank {
 		File f = new File("./stops.txt");
 		Scanner scan = new Scanner(f);
 		Set<String> stopWords = new HashSet<>();
-		Map<Integer, String> documents = new HashMap<>();
+		Map<Integer, Page> documents = new HashMap<>();
 		
 		while(scan.hasNext())
 			stopWords.add(scan.next().toLowerCase());
@@ -29,11 +29,8 @@ public class pageRank {
 		int docNo = 1;
 		while(scan.hasNextLine())
 		{
-			documents.put(docNo++, scan.nextLine().toLowerCase());
+			Page page = new Page(docNo, scan.nextLine(), stopWords);
+			documents.put(docNo++, page);
 		}
-		
-		for(int i = 1; i < docNo; i++)
-			System.out.println(i + " " + documents.get(i));
 	}
-
 }
