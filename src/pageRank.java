@@ -31,6 +31,9 @@ public class pageRank {
 		{
 			documents.put(docNo++, scan.nextLine().toLowerCase());
 		}
+		
+		for(int i = 1; i < docNo; i++)
+			System.out.println(i + " " + documents.get(i));
 	}
 
 }
