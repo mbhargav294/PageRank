@@ -1,10 +1,6 @@
 import java.util.*;
 
 /**
- * 
- */
-
-/**
  * @author vyshnavi_bandi
  *
  */
@@ -16,6 +12,13 @@ public class Page implements Comparable<Page>{
 	Set<String> words;
 	Set<Page> links;
 	
+	
+	//constructor to initialize the Page
+	/*
+	 * @param d - document id
+	 * @param t - page/document/sentence text
+	 * @param stopWords - set of all stop words
+	 */
 	Page(int d, String t, Set<String> stopWords)
 	{
 		text = t;
@@ -31,18 +34,24 @@ public class Page implements Comparable<Page>{
 				words.add(word);
 	}
 	
+	//this function is used to assign the links from this page and the number of links
+	/*
+	 * @param links - Set of all links from this page
+	 */
 	void assignLinks(Set<Page> links)
 	{
 		this.links = links;
 		numberOfLinks = links.size();
 	}
 	
+	//override the default hash code with the document id
 	@Override
 	public int hashCode()
 	{
 		return this.docNo;
 	}
 
+	//override the default comparison function with the comparison between ranks
 	@Override
 	public int compareTo(Page p) {
 		double x = this.rankScore - p.rankScore;

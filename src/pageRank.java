@@ -1,13 +1,11 @@
 import java.io.*;
 import java.util.*;
-import java.util.Map.Entry;
-
-/**
- * 
- */
 
 /**
  * @author madhu_bhargav
+ * this is the main class and this
+ * class uses the Page class to represent 
+ * each sentence in the document as a page
  *
  */
 public class pageRank {
@@ -24,12 +22,14 @@ public class pageRank {
 		Map<String, Set<Page>> wordLinks = new HashMap<>();
 		Map<String, Integer> words = new TreeMap<>();
 		
+		//creating a set of all stop words
 		while(scan.hasNext())
 			stopWords.add(scan.next().toLowerCase());
 		
 		f = new File("./story.txt");
 		scan = new Scanner(f);
 		int docNo = 0;
+		//scan through the story file and 
 		while(scan.hasNextLine())
 		{
 			Page page = new Page(docNo, scan.nextLine(), stopWords);
@@ -49,22 +49,16 @@ public class pageRank {
 			docNo++;
 		}
 		
+		//building word counts
 		for(String word : wordLinks.keySet())
 			words.put(word, wordLinks.get(word).size());
 		
-		System.out.println("Top 10 key words are:");
-		int x = 0;
-		for(Entry<String, Integer> s : entriesSortedByValues(words))
-		{
-			System.out.println(s.getKey() + " " + s.getValue());
-			if(++x > 10)
-				break;
-		}
-		
+		//matrices for PageRank
 		double[][] matrix = new double[docNo][docNo];
 		double[] ranks = new double[docNo];
 		Arrays.fill(ranks, 1.0);
 		
+		//building the initial matrix
 		for(Map.Entry<Integer, Page> e : documents.entrySet())
 		{
 			Page p = e.getValue();
@@ -78,7 +72,9 @@ public class pageRank {
 				matrix[e.getKey()][s.docNo] = 1.0/p.numberOfLinks;
 		}
 		
-		for(int itr = 0; itr < 10; itr++)
+		SortedSet<Integer> topTenDocs = new TreeSet<Integer>();
+		//repeat the matrix multiplication until convergence
+		while(true)
 		{
 			double[] newRanks = new double[docNo];
 			for(int i = 0; i < matrix.length; i++)
@@ -91,16 +87,50 @@ public class pageRank {
 			for(int i = 0; i < docNo; i++)
 				documents.get(i).rankScore = newRanks[i];
 			ranks = Arrays.copyOf(newRanks, newRanks.length);
+			Page[] pgs = new Page[documents.size()];
+			pgs = documents.values().toArray(pgs);
+			Arrays.sort(pgs);
+			int x = 0;
+			
+			SortedSet<Integer> tempDocs = new TreeSet<Integer>();
+			for(Page p : pgs)
+			{
+				tempDocs.add(p.docNo);
+				if(++x >= 10)
+					break;
+			}
+			
+			int diff = 0;
+			for(int p : tempDocs)
+			{
+				if(!topTenDocs.contains(p))
+					diff++;
+			}
+			
+			topTenDocs = tempDocs;
+			//check for convergence
+			if(diff == 0)
+				break;
 		}
 		
-		Page[] pgs = new Page[documents.size()];
-		pgs = documents.values().toArray(pgs);
-		Arrays.sort(pgs);
-		x = 0;
-		for(Page p : pgs)
+		System.out.println("PageRank Algorithm");
+		System.out.println("------------------");
+		
+		//Print statements to print the 10 highest ranked sentences, in the order they appear in the text
+		System.out.printf("\na) The 10 highest ranked sentences, in the order they appear in the text:");
+		System.out.printf("\n-------------------------------------------------------------------------\n");
+		for(int d:topTenDocs)
+			System.out.printf("%-5d: %s\n", d, documents.get(d).text);
+		
+		
+		//Print statements to print the 10 highest ranked keywords, ordered by rank, highest ranked first
+		System.out.printf("\n\nb) The 10 highest ranked keywords, ordered by rank, highest ranked first:");
+		System.out.printf("\n-------------------------------------------------------------------------\n");
+		int x = 0;
+		for(Map.Entry<String, Integer> s : entriesSortedByValues(words))
 		{
-			System.out.println(p.docNo + " -> " + p.rankScore);
-			if(x++ > 10)
+			System.out.printf("%-10s: %d\n", s.getKey(), s.getValue());
+			if(++x > 10)
 				break;
 		}
 	}
