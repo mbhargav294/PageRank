@@ -11,8 +11,7 @@ import java.util.*;
 public class Page implements Comparable<Page>{
 	String text;
 	int docNo;
-	double oldRankScore;
-	double newRankScore;
+	double rankScore;
 	int numberOfLinks;
 	Set<String> words;
 	Set<Page> links;
@@ -21,8 +20,7 @@ public class Page implements Comparable<Page>{
 	{
 		text = t;
 		docNo = d;
-		oldRankScore = 1.0;
-		newRankScore = 1.0;
+		rankScore = 1.0;
 		numberOfLinks = 0;
 		words  = new HashSet<>();
 		links = new HashSet<>();
@@ -33,14 +31,10 @@ public class Page implements Comparable<Page>{
 				words.add(word);
 	}
 	
-	void calculateScore(Set<Page> links)
+	void assignLinks(Set<Page> links)
 	{
 		this.links = links;
 		numberOfLinks = links.size();
-		for(Page p : links)
-		{
-			p.newRankScore += oldRankScore/(double)numberOfLinks;
-		}
 	}
 	
 	@Override
@@ -51,7 +45,7 @@ public class Page implements Comparable<Page>{
 
 	@Override
 	public int compareTo(Page p) {
-		double x = this.newRankScore - p.newRankScore;
+		double x = this.rankScore - p.rankScore;
 		if(x < 0)
 			return 1;
 		else if(x == 0)
